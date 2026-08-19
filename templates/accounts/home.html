@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promptory | Shape the ask</title>
+    <style>
+        :root { --ink: #172631; --muted: #6d7d80; --paper: #fffdf8; --cream: #f5eee2; --line: #dce4df; --green: #087f70; --green-dark: #075e56; --orange: #ef754b; --yellow: #f4c75e; }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; color: var(--ink); background: var(--paper); font-family: Arial, sans-serif; }
+        a { color: inherit; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; width: min(1220px, calc(100% - 56px)); margin: auto; padding: 24px 0; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font: 700 24px Georgia, 'Times New Roman', serif; letter-spacing: -.6px; }
+        .brand-mark { display: grid; place-items: center; width: 35px; height: 35px; background: var(--orange); color: #fff; font: 700 19px Georgia, serif; }
+        .nav { display: flex; align-items: center; gap: 24px; color: var(--muted); font-size: 13px; }
+        .nav a { text-decoration: none; }
+        .nav a:hover { color: var(--green); }
+        .nav-login { color: var(--green-dark); font-weight: 700; }
+        .nav-cta { padding: 11px 16px; background: var(--ink); color: #fff; font-weight: 700; }
+        .nav-cta:hover { background: var(--green) !important; }
+        .hero { display: grid; grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr); gap: clamp(35px, 8vw, 105px); align-items: center; width: min(1220px, calc(100% - 56px)); min-height: 650px; margin: auto; padding: 70px 0 100px; }
+        .hero-copy { max-width: 540px; }
+        .eyebrow { margin: 0 0 17px; color: var(--green); font: 700 11px Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+        h1 { margin: 0; font: 700 clamp(48px, 6vw, 82px)/.93 Georgia, 'Times New Roman', serif; letter-spacing: -4px; }
+        .hero-copy > p:not(.eyebrow) { max-width: 470px; margin: 27px 0 0; color: var(--muted); font-size: 17px; line-height: 1.65; }
+        .hero-actions { display: flex; align-items: center; gap: 18px; margin-top: 31px; }
+        .button { display: inline-flex; align-items: center; justify-content: center; padding: 14px 19px; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .button-main { background: var(--green); color: #fff; }
+        .button-main:hover { background: var(--green-dark); }
+        .button-link { color: var(--green-dark); }
+        .button-link:hover { color: var(--orange); }
+        .trust { display: flex; gap: 28px; margin-top: 48px; color: var(--muted); font-size: 11px; }
+        .trust strong { display: block; margin-bottom: 5px; color: var(--ink); font: 700 21px Georgia, serif; }
+        .demo-frame { position: relative; }
+        .demo-frame:before { content: ''; position: absolute; top: -24px; left: -24px; width: 85px; height: 85px; border-top: 4px solid var(--orange); border-left: 4px solid var(--orange); }
+        .demo-frame:after { content: ''; position: absolute; right: -23px; bottom: -23px; width: 90px; height: 90px; border-right: 4px solid var(--yellow); border-bottom: 4px solid var(--yellow); }
+        .demo { position: relative; z-index: 1; padding: 25px; background: var(--ink); box-shadow: 17px 17px 0 var(--cream); }
+        .demo-bar { display: flex; justify-content: space-between; margin-bottom: 31px; color: #a8b9be; font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; }
+        .lights { display: flex; gap: 5px; }
+        .lights i { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
+        .lights i:nth-child(2) { background: var(--yellow); }
+        .lights i:nth-child(3) { background: var(--green); }
+        .demo label { display: block; margin-bottom: 9px; color: #dce8e4; font-size: 12px; font-weight: 700; }
+        .demo textarea { width: 100%; min-height: 145px; border: 1px solid #405761; padding: 15px; resize: vertical; outline: 0; background: #203640; color: #f4faf7; font: 13px/1.55 'Courier New', monospace; }
+        .demo textarea:focus { border-color: var(--yellow); }
+        .demo-foot { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 16px; }
+        .demo-foot span { color: #91a5aa; font-size: 11px; }
+        .demo-button { border: 0; padding: 11px 14px; background: var(--yellow); color: var(--ink); cursor: pointer; font-size: 11px; font-weight: 700; }
+        .demo-button:hover { background: #fff; }
+        .demo-result { display: none; margin-top: 16px; padding: 14px; border-left: 3px solid var(--green); background: #eff7f3; color: var(--ink); font-size: 12px; line-height: 1.6; white-space: pre-line; }
+        .demo-result.show { display: block; }
+        .section { border-top: 1px solid var(--line); padding: 80px 0 92px; }
+        .section-inner { width: min(1080px, calc(100% - 56px)); margin: auto; }
+        .section-heading { display: grid; grid-template-columns: .8fr 1fr; gap: 70px; align-items: end; margin-bottom: 40px; }
+        h2 { margin: 0; font: 700 42px/.98 Georgia, 'Times New Roman', serif; letter-spacing: -2px; }
+        .section-heading p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.65; }
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }
+        .feature { min-height: 190px; padding: 25px; background: var(--paper); }
+        .feature:nth-child(2) { background: #edf5f0; }
+        .feature:nth-child(3) { background: var(--cream); }
+        .feature-icon { display: block; margin-bottom: 31px; color: var(--orange); font-size: 22px; }
+        .feature h3 { margin: 0 0 9px; font: 700 19px Georgia, serif; }
+        .feature p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+        .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+        .step { min-height: 160px; padding: 24px; background: var(--paper); }
+        .step-number { display: block; margin-bottom: 26px; color: var(--orange); font: 700 11px Arial, sans-serif; letter-spacing: 1px; }
+        .step h3 { margin: 0 0 9px; font: 700 17px Georgia, serif; }
+        .step p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+        .cta { width: min(1080px, calc(100% - 56px)); margin: 0 auto 85px; padding: 62px 30px; background: var(--ink); color: #fff; text-align: center; }
+        .cta h2 { color: #fff; font-size: 40px; }
+        .cta p { margin: 15px 0 27px; color: #b9c8cb; font-size: 15px; }
+        footer { display: flex; justify-content: space-between; gap: 20px; padding: 25px max(28px, calc((100% - 1080px) / 2)); border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+        footer a { color: var(--green-dark); text-decoration: none; font-weight: 700; }
+        @media (max-width: 850px) { .hero { grid-template-columns: 1fr; min-height: auto; padding: 65px 0 90px; } .hero-copy { max-width: 650px; } .demo-frame { max-width: 620px; } .section-heading { grid-template-columns: 1fr; gap: 18px; } .feature-grid { grid-template-columns: 1fr 1fr; } .steps { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .topbar, .hero, .section-inner, .cta { width: calc(100% - 36px); } .topbar { padding: 17px 0; } .nav { gap: 12px; } .nav a:first-child { display: none; } .nav-cta { padding: 10px 11px; } .hero { padding-top: 48px; } h1 { font-size: 53px; letter-spacing: -2.5px; } .hero-copy > p:not(.eyebrow) { font-size: 15px; } .hero-actions { align-items: stretch; flex-direction: column; } .trust { gap: 17px; margin-top: 37px; } .demo { padding: 18px; box-shadow: 10px 10px 0 var(--cream); } .demo-frame:before { top: -12px; left: -12px; width: 58px; height: 58px; } .demo-frame:after { right: -12px; bottom: -12px; width: 58px; height: 58px; } .section { padding: 58px 0 65px; } h2 { font-size: 35px; } .feature-grid, .steps { grid-template-columns: 1fr; } .feature, .step { min-height: auto; } .cta { margin-bottom: 58px; padding: 47px 20px; } .cta h2 { font-size: 34px; } footer { display: block; padding: 22px 18px; line-height: 1.8; text-align: center; } }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="{% url 'home' %}"><b class="brand-mark">✦</b>Promptory</a>
+        <nav class="nav" aria-label="Primary navigation">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How it works</a>
+            {% if user.is_authenticated %}<a class="nav-login" href="{% url 'dashboard' %}">Dashboard</a><a class="nav-cta" href="{% url 'logout' %}">Log out</a>{% else %}<a class="nav-login" href="{% url 'login' %}">Log in</a><a class="nav-cta" href="{% url 'signup' %}">Create account</a>{% endif %}
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="hero-copy"><p class="eyebrow">A clearer way to work with AI</p><h1>Shape<br>the ask.</h1><p>Turn a rough thought into a clear, reusable prompt. Promptory helps you give AI the context, role, and structure it needs to do better work.</p><div class="hero-actions">{% if user.is_authenticated %}<a class="button button-main" href="{% url 'dashboard' %}">Open your studio ↗</a>{% else %}<a class="button button-main" href="{% url 'signup' %}">Build your first prompt ↗</a>{% endif %}<a class="button button-link" href="#how-it-works">See how it works ↓</a></div><div class="trust"><div><strong>01</strong>Write freely</div><div><strong>02</strong>Refine clearly</div><div><strong>03</strong>Reuse easily</div></div></div>
+            <div class="demo-frame"><div class="demo"><div class="demo-bar"><span>Prompt playground</span><span class="lights"><i></i><i></i><i></i></span></div><label for="demo-prompt">Try a rough idea</label><textarea id="demo-prompt" placeholder="Plan a launch for my new product..."></textarea><div class="demo-foot"><span>Private preview</span><button class="demo-button" type="button" id="demo-button">Refine this idea ↗</button></div><div class="demo-result" id="demo-result"></div></div></div>
+        </section>
+        <section class="section" id="features"><div class="section-inner"><div class="section-heading"><h2>Less guesswork.<br>More signal.</h2><p>Good prompts do not need to sound complicated. They need a clear task, the right context, and an answer shape that makes sense.</p></div><div class="feature-grid"><article class="feature"><span class="feature-icon">✦</span><h3>Prompt optimizer</h3><p>Turn a simple idea into a clear and professional instruction.</p></article><article class="feature"><span class="feature-icon">◒</span><h3>Quality score</h3><p>See where your prompt is strong and where more detail will help.</p></article><article class="feature"><span class="feature-icon">▦</span><h3>Useful templates</h3><p>Start faster with structures for coding, study, content, and more.</p></article><article class="feature"><span class="feature-icon">◷</span><h3>Prompt history</h3><p>Keep your previous work close so good thinking is never lost.</p></article><article class="feature"><span class="feature-icon">★</span><h3>Favorites</h3><p>Mark the prompts you trust and return to them whenever you need.</p></article><article class="feature"><span class="feature-icon">⌘</span><h3>Four approaches</h3><p>Choose direct, role-based, example-led, or structured prompting.</p></article></div></div></section>
+        <section class="section" id="how-it-works"><div class="section-inner"><div class="section-heading"><h2>From thought<br>to direction.</h2><p>Promptory gives your thinking a repeatable shape without getting in the way of how you naturally write.</p></div><div class="steps"><article class="step"><span class="step-number">01 / START</span><h3>Write the idea</h3><p>Begin with the rough version in your head.</p></article><article class="step"><span class="step-number">02 / CHECK</span><h3>See the gaps</h3><p>Understand what context or output detail is missing.</p></article><article class="step"><span class="step-number">03 / REFINE</span><h3>Choose a shape</h3><p>Apply the approach that suits the work.</p></article><article class="step"><span class="step-number">04 / KEEP</span><h3>Save the useful one</h3><p>Build a library that gets better with use.</p></article></div></div></section>
+        <section class="cta"><h2>Ready to shape your next ask?</h2><p>Start with one idea. Build a prompt you can use today.</p>{% if user.is_authenticated %}<a class="button button-main" href="{% url 'dashboard' %}">Open dashboard ↗</a>{% else %}<a class="button button-main" href="{% url 'signup' %}">Create your free account ↗</a>{% endif %}</section>
+    </main>
+    <footer><span>Promptory · A clearer way to work with AI</span><span><a href="{% url 'login' %}">Log in</a> · <a href="{% url 'signup' %}">Sign up</a></span></footer>
+    <script>
+        const demoButton = document.getElementById('demo-button');
+        const demoPrompt = document.getElementById('demo-prompt');
+        const demoResult = document.getElementById('demo-result');
+        demoButton.addEventListener('click', () => { const idea = demoPrompt.value.trim() || 'Plan a launch for my new product'; demoResult.textContent = 'Role: Act as a practical strategist.\n\nTask: ' + idea + '\n\nInclude clear steps, useful examples, and a concise recommendation.'; demoResult.classList.add('show'); });
+    </script>
+</body>
+</html>

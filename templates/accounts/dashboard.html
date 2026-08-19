@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promptory | Studio</title>
+    <style>
+        :root { --navy: #142433; --ink: #1d2b35; --muted: #73818b; --paper: #fff; --canvas: #edf2f0; --line: #d8e1de; --mint: #bfe3d5; --green: #087f70; --orange: #f17c4d; --cream: #fff8ec; }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Arial, sans-serif; }
+        button, input, select, textarea { font: inherit; }
+        .app { display: flex; min-height: 100vh; }
+        .rail { display: flex; width: 72px; flex: 0 0 72px; flex-direction: column; align-items: center; padding: 22px 11px; background: var(--navy); }
+        .mark { display: grid; place-items: center; width: 39px; height: 39px; margin-bottom: 62px; background: var(--orange); color: #fff; font: 700 21px Georgia, serif; text-decoration: none; }
+        .rail-nav { display: grid; gap: 13px; }
+        .rail-link { display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid transparent; color: #aebdc6; text-decoration: none; font-size: 19px; }
+        .rail-link:hover, .rail-link.active { border-color: #637982; background: #253c4a; color: #fff; }
+        .rail-link.active { color: var(--mint); }
+        .rail-bottom { margin-top: auto; color: #9eb1ba; font-size: 14px; text-decoration: none; }
+        .main { width: min(1420px, 100%); margin: 0 auto; padding: 28px 42px 55px; }
+        .header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 32px; }
+        .kicker { margin: 0 0 8px; color: var(--green); font: 700 11px Arial, sans-serif; letter-spacing: 1.7px; text-transform: uppercase; }
+        h1 { margin: 0; color: var(--ink); font: 700 clamp(30px, 3.5vw, 48px)/1 Georgia, 'Times New Roman', serif; letter-spacing: -1.8px; }
+        .header-sub { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+        .profile { display: flex; align-items: center; gap: 11px; font-size: 13px; }
+        .avatar { display: grid; place-items: center; width: 38px; height: 38px; background: var(--mint); color: var(--green); font-weight: 700; }
+        .profile a { color: var(--orange); text-decoration: none; font-weight: 700; }
+        .stats { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 12px; max-width: 470px; margin-bottom: 22px; }
+        .stat { display: flex; align-items: baseline; justify-content: space-between; padding: 15px 17px; background: var(--paper); border: 1px solid var(--line); }
+        .stat strong { color: var(--green); font: 700 24px Georgia, serif; }
+        .stat span { color: var(--muted); font-size: 11px; }
+        .studio { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(310px, .8fr); gap: 20px; align-items: start; }
+        .card { background: var(--paper); border: 1px solid var(--line); }
+        .card-pad { padding: 26px; }
+        .card-head { display: flex; justify-content: space-between; align-items: start; gap: 15px; margin-bottom: 22px; }
+        h2 { margin: 0; color: var(--ink); font: 700 23px Georgia, 'Times New Roman', serif; letter-spacing: -.6px; }
+        .card-head p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+        .step { color: var(--orange); font: 700 11px Arial, sans-serif; letter-spacing: 1px; white-space: nowrap; }
+        label { display: block; margin-bottom: 8px; color: var(--ink); font-size: 12px; font-weight: 700; }
+        .field { margin-bottom: 17px; }
+        input, select, textarea { width: 100%; border: 1px solid var(--line); background: #fbfdfc; color: var(--ink); padding: 12px 13px; outline: 0; }
+        textarea { min-height: 205px; resize: vertical; line-height: 1.55; }
+        input:focus, select:focus, textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(8,127,112,.12); }
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+        .compose-actions { display: flex; align-items: center; gap: 14px; margin-top: 21px; }
+        .primary, .secondary, .small-action { border: 0; cursor: pointer; font-size: 12px; font-weight: 700; }
+        .primary { padding: 14px 20px; background: var(--green); color: #fff; }
+        .primary:hover { background: #05695f; }
+        .secondary { padding: 13px 0; background: transparent; color: var(--muted); }
+        .library { background: var(--cream); border-color: #f0dfbf; }
+        .library .card-pad { padding-bottom: 22px; }
+        .template-list { display: grid; gap: 9px; }
+        .template { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 14px; background: rgba(255,255,255,.66); border: 1px solid #efdfc4; }
+        .template h3 { margin: 0 0 4px; color: var(--ink); font: 700 14px Georgia, serif; }
+        .template p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.4; }
+        .small-action { padding: 8px 10px; background: var(--navy); color: #fff; white-space: nowrap; }
+        .small-action:hover { background: var(--orange); }
+        .result { grid-column: 1 / -1; margin-top: 1px; border-top: 4px solid var(--orange); }
+        .result .card-pad { padding-bottom: 24px; }
+        .result-head { display: flex; justify-content: space-between; align-items: start; gap: 15px; }
+        .result textarea { min-height: 220px; margin-top: 17px; border: 0; background: var(--navy); color: #f4faf8; font: 13px/1.65 'Courier New', monospace; }
+        .copy { border: 1px solid var(--line); padding: 9px 12px; background: #fff; color: var(--green); cursor: pointer; font-size: 11px; font-weight: 700; }
+        .health { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .health-item { padding: 13px; background: #f2f7f4; }
+        .health-item span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+        .health-item strong { color: var(--green); font: 700 25px Georgia, serif; }
+        .suggestions { margin: 17px 0 0; padding-left: 18px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+        .history { margin-top: 20px; }
+        .history-tools { display: grid; grid-template-columns: 1fr 170px auto; gap: 10px; margin-top: 22px; }
+        .history-item { padding: 17px 0; border-top: 1px solid var(--line); }
+        .history-meta { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 10px; letter-spacing: .5px; }
+        .history-item h3 { margin: 8px 0 5px; color: var(--ink); font: 400 17px Georgia, serif; }
+        .history-item p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; white-space: pre-wrap; }
+        .history-actions { display: flex; gap: 17px; margin-top: 11px; font-size: 11px; font-weight: 700; }
+        .history-actions a { color: var(--green); text-decoration: none; }
+        .history-actions .danger { color: var(--orange); }
+        .empty { color: var(--muted); font-size: 13px; }
+        @media (max-width: 900px) { .main { padding: 25px; } .studio { grid-template-columns: 1fr; } .result { grid-column: auto; } .library { order: -1; } }
+        @media (max-width: 600px) { .app { display: block; } .rail { width: 100%; height: 66px; flex-direction: row; justify-content: space-between; padding: 12px 17px; } .mark { margin: 0; } .rail-nav { display: flex; gap: 4px; } .rail-link { width: 39px; height: 39px; } .rail-bottom { margin: 0; } .header { display: block; } .profile { margin-top: 18px; } .stats { grid-template-columns: 1fr 1fr; } .stat:last-child { grid-column: 1 / -1; } .card-pad { padding: 20px; } .options, .history-tools { grid-template-columns: 1fr; } .compose-actions { align-items: stretch; flex-direction: column; } .primary { width: 100%; } .health { grid-template-columns: 1fr 1fr; } .health-item:last-child { grid-column: 1 / -1; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="rail">
+        <a class="mark" href="{% url 'dashboard' %}" aria-label="Promptory home">✦</a>
+        <nav class="rail-nav" aria-label="Main navigation">
+            <a class="rail-link active" href="#composer" title="New prompt" aria-label="New prompt">+</a>
+            <a class="rail-link" href="#library" title="Templates" aria-label="Templates">▦</a>
+            <a class="rail-link" href="#history" title="History" aria-label="History">◷</a>
+        </nav>
+        <a class="rail-bottom" href="{% url 'logout' %}" title="Log out" aria-label="Log out">↗</a>
+    </aside>
+    <main class="main">
+        <header class="header">
+            <div><p class="kicker">Promptory studio</p><h1>Shape the ask.</h1><p class="header-sub">A focused space for turning rough ideas into useful AI instructions.</p></div>
+            <div class="profile"><span class="avatar">{{ request.user.username|first|upper }}</span><span>{{ request.user.username }}</span><a href="{% url 'logout' %}">Log out</a></div>
+        </header>
+        <section class="stats" aria-label="Workspace summary"><div class="stat"><strong>{{ prompts|length }}</strong><span>visible prompts</span></div><div class="stat"><strong>{% if optimized_prompt %}1{% else %}0{% endif %}</strong><span>new result</span></div><div class="stat"><strong>4</strong><span>approaches</span></div></section>
+        <section class="studio" id="composer">
+            <form class="card" method="POST"><div class="card-pad"><div class="card-head"><div><p class="kicker">Composer</p><h2>What are you working on?</h2><p>Give the idea. Promptory will add the useful structure.</p></div><span class="step">01 / WRITE</span></div><div class="field"><label for="original_prompt">Your starting point</label><textarea name="original_prompt" id="original_prompt" placeholder="Example: Help me plan a launch campaign for a neighborhood bakery..."></textarea></div><div class="options"><div class="field"><label for="technique">Approach</label><select name="technique" id="technique"><option value="zero_shot">Clear and direct</option><option value="role">Expert role</option><option value="few_shot">With examples</option><option value="structured">Structured output</option></select></div><div class="field"><label for="category">Category</label><select name="category" id="category"><option value="general">General</option><option value="coding">Coding</option><option value="study">Study</option><option value="interview">Interview</option><option value="content">Content</option><option value="data">Data</option></select></div></div><div class="compose-actions"><button class="primary" type="submit">Generate refined prompt ↗</button><button class="secondary" type="button" id="clear-prompt">Clear draft</button></div></div>{% csrf_token %}</form>
+            <aside class="card library" id="library"><div class="card-pad"><div class="card-head"><div><p class="kicker">Library</p><h2>Use a starting shape</h2><p>Adapt a proven prompt in one click.</p></div></div><div class="template-list">{% for item in templates %}<div class="template"><div><h3>{{ item.title }}</h3><p>{{ item.get_category_display }}{% if item.description %} · {{ item.description|truncatechars:44 }}{% endif %}</p></div><button class="small-action use-template" type="button" data-template="{{ item.template|escapejs }}" data-category="{{ item.category }}">Use ↗</button></div>{% empty %}<p class="empty">No active templates yet. Add one from the admin area.</p>{% endfor %}</div></div></aside>
+            {% if optimized_prompt %}<section class="card result" aria-live="polite"><div class="card-pad"><div class="result-head"><div><p class="kicker">Refined result</p><h2>Ready to use</h2><p>Copy this prompt into your favorite AI assistant.</p></div><button class="copy" type="button" id="copy-result">Copy prompt</button></div><textarea id="optimized-result" readonly>{{ optimized_prompt }}</textarea><div class="health"><div class="health-item"><span>Original score</span><strong>{{ original_score }}</strong></div><div class="health-item"><span>Refined score</span><strong>{{ optimized_score }}</strong></div><div class="health-item"><span>Improvement</span><strong>{% if improvement > 0 %}+{% endif %}{{ improvement }}</strong></div></div><ul class="suggestions">{% for suggestion in suggestions %}<li>{{ suggestion }}</li>{% endfor %}</ul></div></section>{% endif %}
+        </section>
+        <section class="card history" id="history"><div class="card-pad"><div class="card-head"><div><p class="kicker">Archive</p><h2>Your prompt history</h2><p>Search the thinking you have already done.</p></div></div><form class="history-tools" method="GET"><input type="search" name="search" placeholder="Search prompts" value="{{ search_query }}"><select name="category"><option value="">All categories</option><option value="coding"{% if category_filter == 'coding' %} selected{% endif %}>Coding</option><option value="study"{% if category_filter == 'study' %} selected{% endif %}>Study</option><option value="interview"{% if category_filter == 'interview' %} selected{% endif %}>Interview</option><option value="content"{% if category_filter == 'content' %} selected{% endif %}>Content</option><option value="data"{% if category_filter == 'data' %} selected{% endif %}>Data</option><option value="general"{% if category_filter == 'general' %} selected{% endif %}>General</option></select><button class="primary" type="submit">Filter</button></form>{% for prompt in prompts %}<article class="history-item"><div class="history-meta"><span>{{ prompt.get_category_display|upper }}</span><span>{{ prompt.created_at|date:'M j, Y · H:i' }}</span></div><h3>{{ prompt.original_prompt|truncatechars:120 }}</h3><p>{{ prompt.optimized_prompt|truncatechars:180 }}</p><div class="history-actions"><a href="{% url 'toggle_favorite' prompt.id %}">{% if prompt.is_favorite %}★ Favorited{% else %}☆ Favorite{% endif %}</a><a class="danger" href="{% url 'delete_prompt' prompt.id %}" onclick="return confirm('Delete this prompt?');">Delete</a></div></article>{% empty %}<p class="empty">No prompts match this view yet.</p>{% endfor %}</div></section>
+    </main>
+</div>
+<script>
+    const promptBox = document.getElementById('original_prompt');
+    document.querySelectorAll('.use-template').forEach((button) => button.addEventListener('click', () => { promptBox.value = button.dataset.template; document.getElementById('category').value = button.dataset.category; promptBox.focus(); document.getElementById('composer').scrollIntoView({ behavior: 'smooth' }); }));
+    document.getElementById('clear-prompt').addEventListener('click', () => { promptBox.value = ''; promptBox.focus(); });
+    const copyButton = document.getElementById('copy-result');
+    if (copyButton) copyButton.addEventListener('click', async () => { await navigator.clipboard.writeText(document.getElementById('optimized-result').value); copyButton.textContent = 'Copied'; setTimeout(() => { copyButton.textContent = 'Copy prompt'; }, 1600); });
+</script>
+</body>
+</html>

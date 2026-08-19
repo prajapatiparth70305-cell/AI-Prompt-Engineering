@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in | Promptory</title>
+    <style>
+        :root { --ink: #18212f; --muted: #6b7585; --line: #dfe4ea; --paper: #fff; --teal: #087f7b; --teal-dark: #05605d; --coral: #f26b55; --yellow: #f5c85b; --wash: #f4f6f7; }
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; background: var(--wash); color: var(--ink); font-family: Arial, sans-serif; }
+        .page { display: grid; grid-template-columns: minmax(480px, 1.1fr) minmax(360px, .9fr); min-height: 100vh; }
+        .welcome { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 42px clamp(30px, 7vw, 110px); background: #e7f1ed; }
+        .welcome:before, .welcome:after { content: ''; position: absolute; border-radius: 50%; pointer-events: none; }
+        .welcome:before { width: 390px; height: 390px; right: -125px; top: -135px; background: var(--yellow); opacity: .9; }
+        .welcome:after { width: 300px; height: 300px; left: -150px; bottom: -100px; border: 42px solid var(--coral); }
+        .brand { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font: 700 23px Georgia, 'Times New Roman', serif; letter-spacing: -.5px; }
+        .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; background: var(--coral); color: #fff; font: 700 18px Arial, sans-serif; }
+        .welcome-copy { position: relative; z-index: 1; max-width: 500px; margin: auto 0; }
+        .eyebrow { margin: 0 0 17px; color: var(--teal-dark); font: 700 11px Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+        h1 { max-width: 480px; margin: 0; color: var(--ink); font: 700 clamp(40px, 5vw, 70px)/.98 Georgia, 'Times New Roman', serif; letter-spacing: -3px; }
+        .welcome-copy p:not(.eyebrow) { max-width: 410px; margin: 25px 0 0; color: #566473; font: 15px/1.7 Arial, sans-serif; }
+        .proof { position: relative; z-index: 1; display: flex; gap: 35px; padding-top: 21px; border-top: 1px solid #bdcfc8; }
+        .proof strong { display: block; margin-bottom: 5px; color: var(--ink); font: 700 19px Georgia, 'Times New Roman', serif; }
+        .proof span { color: #64736f; font: 11px Arial, sans-serif; }
+        .form-side { display: grid; place-items: center; padding: 42px 28px; background: #fff; }
+        .form-wrap { width: min(100%, 420px); }
+        .form-header { margin-bottom: 31px; }
+        .form-header h2 { margin: 0; font: 700 31px Georgia, 'Times New Roman', serif; letter-spacing: -1px; }
+        .form-header p { margin: 9px 0 0; color: var(--muted); font: 14px/1.5 Arial, sans-serif; }
+        .alert { margin-bottom: 20px; padding: 13px 14px; border-left: 4px solid var(--coral); background: #fff1ee; color: #a83d2f; font: 13px/1.5 Arial, sans-serif; }
+        .field { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--ink); font: 700 12px Arial, sans-serif; letter-spacing: .2px; }
+        input { width: 100%; padding: 14px; border: 1px solid var(--line); background: #fbfcfc; color: var(--ink); font-size: 14px; outline: none; }
+        input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(8,127,123,.12); }
+        .password-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .password-row label { margin-bottom: 8px; }
+        .show-password { border: 0; padding: 0; background: transparent; color: var(--teal-dark); cursor: pointer; font: 700 11px Arial, sans-serif; }
+        .submit { width: 100%; margin-top: 7px; padding: 14px 18px; border: 0; background: var(--teal); color: #fff; cursor: pointer; font: 700 13px Arial, sans-serif; }
+        .submit:hover { background: var(--teal-dark); }
+        .tip { display: flex; gap: 9px; margin: 22px 0 0; padding: 13px; background: #f7f8f6; color: var(--muted); font: 11px/1.5 Arial, sans-serif; }
+        .tip b { color: var(--coral); font-size: 15px; }
+        .switch { margin: 33px 0 0; padding-top: 21px; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font: 13px Arial, sans-serif; }
+        .switch a { color: var(--teal-dark); font-weight: 700; text-decoration: none; }
+        @media (max-width: 760px) { .page { display: block; } .welcome { min-height: 340px; padding: 27px 25px 31px; } .welcome-copy { margin: 55px 0 0; } .welcome-copy h1 { font-size: 43px; } .welcome-copy p:not(.eyebrow) { margin-top: 15px; } .proof { display: none; } .form-side { padding: 42px 25px 55px; } }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="welcome">
+            <a class="brand" href="{% url 'login' %}"><b class="brand-mark">✦</b>Promptory</a>
+            <div class="welcome-copy">
+                <p class="eyebrow">Welcome back</p>
+                <h1>Your next good prompt is waiting.</h1>
+                <p>Return to your prompt studio, pick up an idea, and turn it into something an AI can actually use.</p>
+            </div>
+            <div class="proof"><div><strong>01</strong><span>Write with intent</span></div><div><strong>02</strong><span>Refine the details</span></div><div><strong>03</strong><span>Keep the useful work</span></div></div>
+        </section>
+        <main class="form-side">
+            <div class="form-wrap">
+                <header class="form-header">
+                    <h2>Log in to Promptory</h2>
+                    <p>Your personal prompt workspace is ready.</p>
+                </header>
+                {% if error %}<div class="alert" role="alert">{{ error }}</div>{% endif %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="field"><label for="username">Username</label><input id="username" type="text" name="username" autocomplete="username" placeholder="Enter your username" required></div>
+                    <div class="field"><div class="password-row"><label for="password">Password</label><button class="show-password" type="button" id="toggle-password">Show password</button></div><input id="password" type="password" name="password" autocomplete="current-password" placeholder="Enter your password" required></div>
+                    <button class="submit" type="submit">Continue to workspace</button>
+                </form>
+                <div class="tip"><b>✦</b><span>Your saved prompts, favorites, and templates are connected to your account.</span></div>
+                <p class="switch">New to Promptory? <a href="{% url 'signup' %}">Create an account</a></p>
+            </div>
+        </main>
+    </div>
+    <script>
+        const toggle = document.getElementById('toggle-password');
+        const password = document.getElementById('password');
+        toggle.addEventListener('click', () => { const isHidden = password.type === 'password'; password.type = isHidden ? 'text' : 'password'; toggle.textContent = isHidden ? 'Hide password' : 'Show password'; });
+    </script>
+</body>
+</html>
