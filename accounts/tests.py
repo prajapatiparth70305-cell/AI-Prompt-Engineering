@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .views import calculate_prompt_score, compare_prompt_scores
+from .views import (
+    calculate_prompt_score,
+    compare_prompt_scores,
+    get_prompt_analysis,
+)
 
 
 class PromptScoringTests(TestCase):
@@ -35,3 +39,17 @@ class PromptScoringTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+
+    def test_get_prompt_analysis_returns_actionable_metrics(self):
+        analysis = get_prompt_analysis(
+            "Write a Python script to parse a CSV file and return results in JSON."
+        )
+
+        self.assertIn("word_count", analysis)
+        self.assertIn("task_strength", analysis)
+        self.assertIn("context_strength", analysis)
+        self.assertIn("output_strength", analysis)
+        self.assertIn("overall_score", analysis)
+        self.assertGreater(analysis["word_count"], 0)
+        self.assertGreaterEqual(analysis["overall_score"], 0)
+        self.assertLessEqual(analysis["overall_score"], 100)

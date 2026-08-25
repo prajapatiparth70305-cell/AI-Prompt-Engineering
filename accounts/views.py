@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -242,6 +243,99 @@ def get_prompt_suggestions(prompt):
 
 
 # -------------------------------------------------
+# PROMPT ANALYSIS
+# -------------------------------------------------
+
+def get_prompt_analysis(prompt):
+    if not prompt:
+        return {
+            "word_count": 0,
+            "task_strength": 0,
+            "context_strength": 0,
+            "output_strength": 0,
+            "overall_score": 0,
+            "summary": "Add a task, context, and output requirement to improve your prompt.",
+        }
+
+    prompt_lower = prompt.strip().lower()
+    words = prompt.split()
+    word_count = len(words)
+
+    task_words = [
+        "write",
+        "create",
+        "explain",
+        "generate",
+        "develop",
+        "build",
+        "calculate",
+        "analyze",
+        "summarize",
+        "compare",
+        "design",
+        "debug",
+    ]
+    context_words = [
+        "for",
+        "using",
+        "about",
+        "because",
+        "where",
+        "when",
+        "with",
+        "target",
+        "audience",
+        "users",
+    ]
+    output_words = [
+        "format",
+        "steps",
+        "example",
+        "list",
+        "table",
+        "code",
+        "json",
+        "bullet",
+        "outline",
+        "summary",
+    ]
+
+    task_hits = sum(1 for word in task_words if word in prompt_lower)
+    context_hits = sum(1 for word in context_words if word in prompt_lower)
+    output_hits = sum(1 for word in output_words if word in prompt_lower)
+
+    task_strength = min(100, round((task_hits / len(task_words)) * 100))
+    context_strength = min(100, round((context_hits / len(context_words)) * 100))
+    output_strength = min(100, round((output_hits / len(output_words)) * 100))
+    length_score = min(100, round((word_count / 24) * 100))
+
+    overall_score = round(
+        (task_strength * 0.35)
+        + (context_strength * 0.25)
+        + (output_strength * 0.20)
+        + (length_score * 0.20)
+    )
+
+    if overall_score >= 80:
+        summary = "This prompt is well structured and likely to produce a useful answer."
+    elif overall_score >= 60:
+        summary = "This prompt is good, but a little more context or output detail would help."
+    elif overall_score >= 35:
+        summary = "This prompt needs clearer instructions and a stronger output format."
+    else:
+        summary = "This prompt is too vague. Add the task, audience, and desired output more clearly."
+
+    return {
+        "word_count": word_count,
+        "task_strength": task_strength,
+        "context_strength": context_strength,
+        "output_strength": output_strength,
+        "overall_score": overall_score,
+        "summary": summary,
+    }
+
+
+# -------------------------------------------------
 # COMPARE SCORES
 # -------------------------------------------------
 
@@ -280,6 +374,8 @@ def dashboard(request):
     optimized_prompt = None
 
     prompt_score = None
+
+    prompt_analysis = None
 
     suggestions = []
 
@@ -328,6 +424,10 @@ def dashboard(request):
         if original_prompt:
 
             prompt_score = calculate_prompt_score(
+                original_prompt
+            )
+
+            prompt_analysis = get_prompt_analysis(
                 original_prompt
             )
 
@@ -509,6 +609,7 @@ Output Format:
             "prompts": prompts,
             "optimized_prompt": optimized_prompt,
             "prompt_score": prompt_score,
+            "prompt_analysis": prompt_analysis,
             "suggestions": suggestions,
             "original_score": original_score,
             "optimized_score": optimized_score,
@@ -519,6 +620,45 @@ Output Format:
             "templates": templates
         }
     )
+
+
+# -------------------------------------------------
+# EXPORT PROMPTS
+# -------------------------------------------------
+
+@login_required
+def export_prompts(request):
+    search_query = request.GET.get("search", "").strip()
+    category_filter = request.GET.get("category", "")
+    favorite_filter = request.GET.get("favorite", "")
+
+    prompts = PromptHistory.objects.filter(user=request.user).order_by("-created_at")
+
+    if search_query:
+        prompts = prompts.filter(original_prompt__icontains=search_query)
+
+    if category_filter:
+        prompts = prompts.filter(category=category_filter)
+
+    if favorite_filter == "yes":
+        prompts = prompts.filter(is_favorite=True)
+
+    lines = ["Promptory Export\n================\n"]
+    if not prompts.exists():
+        lines.append("No prompts found for this export.")
+    else:
+        for index, prompt in enumerate(prompts, start=1):
+            lines.append(f"{index}. Category: {prompt.get_category_display()}")
+            lines.append(f"Created: {prompt.created_at.strftime('%Y-%m-%d %H:%M')}")
+            lines.append("Prompt:")
+            lines.append(prompt.original_prompt.strip())
+            lines.append("\nOptimized Prompt:")
+            lines.append(prompt.optimized_prompt.strip() or "No optimized version saved.")
+            lines.append("\n" + ("-" * 60) + "\n")
+
+    response = HttpResponse("\n".join(lines), content_type="text/plain; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="promptory-export.txt"'
+    return response
 
 
 # -------------------------------------------------
